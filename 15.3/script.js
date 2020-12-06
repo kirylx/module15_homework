@@ -2,7 +2,6 @@ const buttonSend = document.querySelector("#button-send");
 const buttonLocation = document.querySelector("#button-location");
 const inputSend = document.querySelector("input");
 const messages = document.querySelector("#messages");
-
 const addMessage = (message, me) => {
     const newDiv = document.createElement("div");
     let newMessage = "";
@@ -36,8 +35,8 @@ document.addEventListener("DOMContentLoaded", function () {
         addMessage(inputSend.value, true);
     });
 
-    websocket.addEventListener("message", (event) => {
-        addMessage(inputSend.value, false);
+    websocket.addEventListener("message", () => {
+        addMessage(inputSend.value);
     });
 });
 
@@ -48,7 +47,7 @@ if (!navigator.geolocation) {
 buttonLocation.addEventListener("click", () => {
     navigator.geolocation.getCurrentPosition(
         (position) => {
-            const href = `https://www.openstreetmap.org/#map=18/${position.coords.latitude}/${position.coords.longitude}`;
+            const href = `<a href="https://www.openstreetmap.org/#map=18/${position.coords.latitude}/${position.coords.longitude}" target="_blank" class="badge badge-light"> Click to see where you are </a>`;
             addMessage(href);
         },
         () => {
