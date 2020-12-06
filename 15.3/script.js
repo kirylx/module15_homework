@@ -2,7 +2,6 @@ const buttonSend = document.querySelector("#button-send");
 const buttonLocation = document.querySelector("#button-location");
 const inputSend = document.querySelector("input");
 const messages = document.querySelector("#messages");
-const geoLocation = document.querySelector("#location");
 
 const addMessage = (message, me) => {
     const newDiv = document.createElement("div");
@@ -29,19 +28,6 @@ const addMessage = (message, me) => {
     messages.appendChild(newDiv);
 };
 
-const addLocation = (href, error) => {
-    const newDiv = document.createElement("div");
-    if (!error) {
-        const newLocation = `<a href=${href} class="badge badge-light">See on the map</a>`;
-        newDiv.innerHTML = newLocation;
-    } else {
-        const locationError =
-            '<p> <i class="fas fa-exclamation-triangle"></i> Cannot get your location </p>';
-        newDiv.innerHTML = locationError;
-    }
-    geoLocation.appendChild(newDiv);
-};
-
 document.addEventListener("DOMContentLoaded", function () {
     const websocket = new WebSocket("wss://echo.websocket.org/");
 
@@ -55,18 +41,18 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+if (!navigator.geolocation) {
+    buttonLocation.classList.add("disabled");
+}
+
 buttonLocation.addEventListener("click", () => {
-    if (!navigator.geolocation) {
-        buttonLocation.classList.add("disabled");
-    } else {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const href = `https://www.openstreetmap.org/#map=18/${position.coords.latitude}/${position.coords.longitude}`;
-                addLocation(href, false);
-            },
-            () => {
-                addLocation("", true);
-            }
-        );
-    }
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const href = `https://www.openstreetmap.org/#map=18/${position.coords.latitude}/${position.coords.longitude}`;
+            addMessage(href);
+        },
+        () => {
+            addMessage("Cannot find your location");
+        }
+    );
 });
